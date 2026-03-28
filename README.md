@@ -1,1 +1,8 @@
 # GlobalGoodHackethon
+
+public class GlobalGoodHackethon(){
+
+
+
+
+}
