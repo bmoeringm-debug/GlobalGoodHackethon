@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MatchU</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
+    :root {
+      --bg-image: url("https://images.pexels.com/photos/7683629/pexels-photo-7683629.jpeg?auto=compress&cs=tinysrgb&w=1800");
+      --bg-1: #07111d;
+      --bg-2: #0e1d30;
+      --surface: rgba(255, 255, 255, 0.94);
+      --surface-soft: rgba(245, 248, 252, 0.92);
+      --text: #0f172a;
+      --muted: #556070;
+      --line: rgba(189, 205, 224, 0.42);
+      --primary: #123e61;
+      --primary-2: #1b5f8f;
+      --success-bg: #eaf9f1;
+      --success-text: #12603a;
+      --warn-bg: #fff5e8;
+      --warn-text: #8a4b08;
+      --danger-bg: #fdeeee;
+      --danger-text: #8f1d1d;
+      --saved-bg: #e9f1ff;
+      --saved-text: #1f4e98;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(180deg, rgba(8, 18, 31, 0.46), rgba(8, 18, 31, 0.62)),
+        var(--bg-image) center center / cover fixed no-repeat,
+        linear-gradient(180deg, var(--bg-1), var(--bg-2));
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    body::before {
+      background:
+        linear-gradient(140deg, rgba(7, 16, 28, 0.34), rgba(7, 16, 28, 0.52)),
+        radial-gradient(900px 420px at 10% 10%, rgba(64, 115, 164, 0.16), transparent 68%),
+        radial-gradient(760px 380px at 100% 0%, rgba(37, 108, 139, 0.1), transparent 62%);
+      z-index: 0;
+    }
+
+    body::after {
+      background:
+        linear-gradient(rgba(5, 11, 20, 0.12), rgba(5, 11, 20, 0.28)),
+        repeating-linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.018) 0,
+          rgba(255, 255, 255, 0.018) 1px,
+          transparent 1px,
+          transparent 120px
+        );
+      opacity: 0.5;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 20px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      background:
+        linear-gradient(135deg, rgba(7, 18, 33, 0.9), rgba(18, 53, 82, 0.86)),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+      color: #f8fbff;
+      border-radius: 22px;
+      padding: 30px;
+      box-shadow: 0 20px 38px rgba(3, 10, 19, 0.34);
+      margin-bottom: 24px;
+      border: 1px solid rgba(214, 231, 247, 0.16);
+      backdrop-filter: blur(10px);
+    }
+    .hero h1 { margin: 0 0 10px; font-size: 2.15rem; letter-spacing: -0.02em; }
+    .hero p { margin: 0; line-height: 1.65; color: #d7e8f6; }
+    .hero-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1.45fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 16px 32px rgba(5, 13, 24, 0.18);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 1.34rem;
+      letter-spacing: -0.01em;
+    }
+    .subtext {
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.55;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #334155;
+    }
+    .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .label-row label {
+      margin-bottom: 0;
+    }
+    .field-hint {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #6b7280;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid #d9e2ef;
+      padding: 2px 7px;
+      border-radius: 999px;
+      line-height: 1.2;
+      transition: all 0.2s ease;
+    }
+    .field-hint.required {
+      color: #8a4b08;
+      background: #fff4e4;
+      border-color: #f0d3a0;
+    }
+    .field-help {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 0.79rem;
+      line-height: 1.4;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #ccd6e6;
+      border-radius: 12px;
+      font-size: 0.98rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #5197c7;
+      box-shadow: 0 0 0 3px rgba(81, 151, 199, 0.2);
+    }
+
+    button {
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      padding: 13px 18px;
+      border-radius: 12px;
+      font-size: 0.96rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 8px 20px rgba(11, 74, 111, 0.25);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(11, 74, 111, 0.28);
+      filter: brightness(1.02);
+    }
+
+    .secondary-btn {
+      background: #eef3fa;
+      color: #26435f;
+      box-shadow: none;
+      border: 1px solid #d3dfef;
+      margin-top: 0;
+    }
+    .secondary-btn:hover {
+      box-shadow: none;
+      background: #e4edf8;
+    }
+
+    .form-alert {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.4;
+      border: 1px solid transparent;
+      display: none;
+    }
+    .form-alert.error {
+      background: var(--danger-bg);
+      border-color: #efc8c8;
+      color: var(--danger-text);
+    }
+    .form-alert.info {
+      background: #e9f4ff;
+      border-color: #c7dff7;
+      color: #134a7c;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      background: #edf3fc;
+      color: #305170;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      border: 1px solid #d8e4f4;
+    }
+
+    .result {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      background: linear-gradient(180deg, #ffffff, #fbfcff);
+    }
+
+    .result h3 { margin: 0 0 6px; font-size: 1.18rem; letter-spacing: -0.01em; }
+    .meta, .cost-line {
+      margin: 4px 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .score-box {
+      min-width: 170px;
+      text-align: right;
+      background: linear-gradient(135deg, #0f4e76, #1578a5);
+      color: #fff;
+      padding: 12px;
+      border-radius: 14px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+    .score-box .big {
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin: 4px 0;
+      letter-spacing: -0.02em;
+    }
+
+    .tag-row {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #eef3fb;
+      color: #314761;
+      border: 1px solid #dbe4f3;
+    }
+
+    .tag.strong {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border-color: #ccebd8;
+    }
+    .tag.possible {
+      background: var(--warn-bg);
+      color: var(--warn-text);
+      border-color: #f3ddbe;
+    }
+    .tag.stretch {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      border-color: #efc8c8;
+    }
+    .tag.saved {
+      background: var(--saved-bg);
+      color: var(--saved-text);
+      border-color: #c9d9f4;
+    }
+
+    .why-box {
+      margin-top: 14px;
+      background: var(--surface-soft);
+      border: 1px solid #dbe3f0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: #334155;
+      font-size: 0.88rem;
+      line-height: 1.55;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .link-actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #eef3fa;
+      color: #26435f;
+      border: 1px solid #d3dfef;
+      transition: background 0.2s ease, transform 0.18s ease;
+    }
+
+    .link-btn:hover {
+      background: #e4edf8;
+      transform: translateY(-1px);
+    }
+
+    .favorite-item {
+      background: var(--surface-soft);
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #dbe3f0;
+    }
+
+    .favorite-item strong { display: block; margin-bottom: 4px; }
+    .favorite-item .muted { font-size: 0.84rem; color: var(--muted); margin-bottom: 8px; }
+    .application-method {
+      margin-top: 12px;
+      margin-bottom: 8px;
+      padding: 10px;
+      border: 1px solid #dbe3f0;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .application-method-title {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .application-method-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .application-method-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.84rem;
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .application-method-option input {
+      width: auto;
+      margin: 0;
+      accent-color: var(--primary);
+    }
+    .school-note {
+      width: 100%;
+      margin-top: 8px;
+      min-height: 78px;
+      resize: vertical;
+      border: 1px solid #ccd6e6;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: inherit;
+      font-size: 0.86rem;
+      color: var(--text);
+      background: #fff;
+    }
+    .school-note:focus {
+      outline: none;
+      border-color: #5197c7;
+      box-shadow: 0 0 0 3px rgba(81, 151, 199, 0.2);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .compare-card {
+      background: var(--surface-soft);
+      border: 1px solid #dbe3f0;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .compare-card h4 { margin-top: 0; margin-bottom: 12px; }
+    .compare-list { list-style: none; padding: 0; margin: 0; }
+    .compare-list li { font-size: 0.88rem; margin-bottom: 8px; color: #334155; }
+    .compare-list strong { color: #0f172a; }
+
+    .empty {
+      padding: 24px;
+      background: var(--surface-soft);
+      border: 1px dashed #c8d5e7;
+      border-radius: 16px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .result-top { flex-direction: column; }
+      .score-box { text-align: left; }
+    }
+
+    @media (max-width: 520px) {
+      .container { padding: 24px 14px 40px; }
+      .hero { padding: 22px; border-radius: 18px; }
+      .card { padding: 18px; border-radius: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>MatchU</h1>
+        <p>
+          Enter a student's GPA, SAT, ACT, intended major, region preference, school size preference, and test policy.
+          Region and test policy are used as filters. Intended major is shown as context against highlighted academic strengths, but it does not affect ranking.
+        </p>
+      <div class="hero-actions">
+        <a class="link-btn" href="school-calendar.html" target="_blank" rel="noopener noreferrer">Deadlines Calendar</a>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <p class="subtext">
+            Enter the profile and click <strong>Find Matches</strong>. GPA is required. SAT or ACT is required unless
+            <strong>Only Test Optional Schools</strong> is selected.
+          </p>
+
+          <div class="form-grid">
+            <div class="full">
+              <label for="studentName">Student Name</label>
+              <input id="studentName" type="text" placeholder="Enter student name" />
+            </div>
+
+            <div>
+              <div class="label-row">
+                <label for="gpa">GPA</label>
+                <span class="field-hint required">Required</span>
+              </div>
+              <input id="gpa" type="number" min="0" max="4" step="0.01" placeholder="3.60" required />
+            </div>
+
+            <div>
+              <div class="label-row">
+                <label for="sat">SAT</label>
+                <span id="satRequirementHint" class="field-hint">Optional</span>
+              </div>
+              <input id="sat" type="number" min="400" max="1600" placeholder="1280" />
+            </div>
+
+            <div>
+              <div class="label-row">
+                <label for="act">ACT</label>
+                <span id="actRequirementHint" class="field-hint">Optional</span>
+              </div>
+              <input id="act" type="number" min="1" max="36" placeholder="27" />
+            </div>
+
+            <div class="full">
+              <div id="testRequirementHelp" class="field-help">
+                SAT or ACT is required unless Only Test Optional Schools is selected.
+              </div>
+            </div>
+
+            <div>
+              <label for="testPolicy">Test Policy</label>
+              <select id="testPolicy">
+                <option value="either">No Preference</option>
+                <option value="submit">Submit Test Scores</option>
+                <option value="optional">Only Test Optional Schools</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="major">Intended Major</label>
+              <select id="major">
+                <option value="Any">Any</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Business">Business</option>
+                <option value="Science">Science</option>
+                <option value="Liberal Arts">Liberal Arts</option>
+                <option value="Health">Health</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="region">Region Preference</label>
+              <select id="region">
+                <option value="Any">Any</option>
+                <option value="Northeast">Northeast</option>
+                <option value="Midwest">Midwest</option>
+                <option value="South">South</option>
+                <option value="West">West</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="size">School Size Preference</label>
+              <select id="size">
+                <option value="Any">Any</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+              </select>
+            </div>
+          </div>
+
+          <button id="matchBtn">Find Matches</button>
+          <div id="formMessage" class="form-alert"></div>
+        </div>
+
+        <div class="card" style="margin-top:24px;">
+          <h2>Saved Schools</h2>
+          <p class="subtext">Save unlimited schools to build your list and track deadline dates.</p>
+          <div class="link-actions" style="margin-top:-6px; margin-bottom:14px;">
+            <a class="link-btn" href="school-calendar.html" target="_blank" rel="noopener noreferrer">Open Deadlines Calendar</a>
+          </div>
+          <div id="favorites" class="favorites-list">
+            <div class="empty">No saved schools yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="results-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">Top Matches</h2>
+              <div class="subtext" style="margin: 0;">Sorted by bucket first, then fit, then cost.</div>
+            </div>
+            <div class="pill" id="resultCount">0 schools ranked</div>
+          </div>
+
+          <div id="results">
+            <div class="empty">
+              No results yet. Enter student information and click <strong>Find Matches</strong>
+              to generate recommendations.
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:24px;">
+          <h2>Compare Schools</h2>
+          <p class="subtext">Select up to two saved schools to compare side by side.</p>
+          <div id="compareArea">
+            <div class="empty">Save schools to compare them here.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="college-import.js"></script>
+  <script>
+    const collegeData = [
+      {
+        name: "Harvard University",
+        region: "Northeast",
+        state: "MA",
+        fullUndergrad: 7000,
+        top25perc: 100,
+        gradRate: 97,
+        deadline: "Jan 1",
+        majorStrengths: ["Liberal Arts", "Business", "Science"],
+        applications: 43000,
+        accepted: 2000,
+        outstate: 60000,
+        roomBoard: 20000,
+        books: 1100,
+        personal: 3200,
+        phd: 99,
+        terminal: 99,
+        testOptional: true,
+        isPrivate: true,
+        satRange: [1460, 1580],
+        actRange: [33, 35]
+      },
+      {
+        name: "Yale University",
+        region: "Northeast",
+        state: "CT",
+        fullUndergrad: 5400,
+        top25perc: 99,
+        gradRate: 96,
+        deadline: "Jan 2",
+        majorStrengths: ["Liberal Arts", "Business", "Science"],
+        applications: 38000,
+        accepted: 1900,
+        outstate: 60000,
+        roomBoard: 20000,
+        books: 1100,
+        personal: 3000,
+        phd: 97,
+        terminal: 98,
+        testOptional: true,
+        isPrivate: true,
+        satRange: [1450, 1570],
+        actRange: [33, 35]
+      },
+      {
+        name: "MIT",
+        region: "Northeast",
+        state: "MA",
+        fullUndergrad: 4500,
+        top25perc: 99,
+        gradRate: 96,
+        deadline: "Jan 1",
+        majorStrengths: ["Engineering", "Science"],
+        applications: 33000,
+        accepted: 1650,
+        outstate: 60000,
+        roomBoard: 19200,
+        books: 1100,
+        personal: 3250,
+        phd: 98,
+        terminal: 99,
+        testOptional: false,
+        isPrivate: true,
+        satRange: [1500, 1580],
+        actRange: [34, 35]
+      },
+      {
+        name: "Princeton University",
+        region: "Northeast",
+        state: "NJ",
+        fullUndergrad: 5300,
+        top25perc: 100,
+        gradRate: 97,
+        deadline: "Jan 1",
+        majorStrengths: ["Engineering", "Science", "Business"],
+        applications: 36000,
+        accepted: 1700,
+        outstate: 60000,
+        roomBoard: 20000,
+        books: 1100,
+        personal: 3100,
+        phd: 99,
+        terminal: 99,
+        testOptional: false,
+        isPrivate: true,
+        satRange: [1480, 1580],
+        actRange: [33, 35]
+      },
+      {
+        name: "Duke University",
+        region: "South",
+        state: "NC",
+        fullUndergrad: 6700,
+        top25perc: 97,
+        gradRate: 95,
+        deadline: "Jan 2",
+        majorStrengths: ["Engineering", "Health", "Science"],
+        applications: 35000,
+        accepted: 1800,
+        outstate: 60000,
+        roomBoard: 19000,
+        books: 1100,
+        personal: 3100,
+        phd: 92,
+        terminal: 96,
+        testOptional: false,
+        isPrivate: true,
+        satRange: [1430, 1560],
+        actRange: [33, 35]
+      },
+      {
+        name: "Northwestern University",
+        region: "Midwest",
+        state: "IL",
+        fullUndergrad: 8300,
+        top25perc: 96,
+        gradRate: 94,
+        deadline: "Jan 10",
+        majorStrengths: ["Engineering", "Business", "Liberal Arts"],
+        applications: 40000,
+        accepted: 2400,
+        outstate: 60000,
+        roomBoard: 19000,
+        books: 1100,
+        personal: 2900,
+        phd: 90,
+        terminal: 94,
+        testOptional: true,
+        isPrivate: true,
+        satRange: [1440, 1560],
+        actRange: [33, 35]
+      },
+      {
+        name: "UC Berkeley",
+        region: "West",
+        state: "CA",
+        fullUndergrad: 31000,
+        top25perc: 96,
+        gradRate: 92,
+        deadline: "Nov 30",
+        majorStrengths: ["Engineering", "Science", "Business"],
+        applications: 125000,
+        accepted: 14000,
+        outstate: 46000,
+        roomBoard: 19000,
+        books: 1000,
+        personal: 2800,
+        phd: 91,
+        terminal: 95,
+        testOptional: true,
+        isPrivate: false,
+        satRange: [1310, 1530],
+        actRange: [30, 34]
+      },
+      {
+        name: "University of Michigan",
+        region: "Midwest",
+        state: "MI",
+        fullUndergrad: 31000,
+        top25perc: 92,
+        gradRate: 93,
+        deadline: "Feb 1",
+        majorStrengths: ["Engineering", "Business", "Science"],
+        applications: 65000,
+        accepted: 8500,
+        outstate: 30000,
+        roomBoard: 12500,
+        books: 1000,
+        personal: 2500,
+        phd: 88,
+        terminal: 92,
+        testOptional: false,
+        isPrivate: false,
+        satRange: [1300, 1510],
+        actRange: [30, 34]
+      },
+      {
+        name: "University of Texas at Austin",
+        region: "South",
+        state: "TX",
+        fullUndergrad: 40000,
+        top25perc: 87,
+        gradRate: 85,
+        deadline: "Dec 1",
+        majorStrengths: ["Engineering", "Business", "Science"],
+        applications: 52000,
+        accepted: 10000,
+        outstate: 38000,
+        roomBoard: 11500,
+        books: 950,
+        personal: 2300,
+        phd: 82,
+        terminal: 86,
+        testOptional: true,
+        isPrivate: false,
+        satRange: [1230, 1450],
+        actRange: [28, 33]
+      },
+      {
+        name: "Purdue University",
+        region: "Midwest",
+        state: "IN",
+        fullUndergrad: 40000,
+        top25perc: 85,
+        gradRate: 83,
+        deadline: "Mar 15",
+        majorStrengths: ["Engineering", "Science"],
+        applications: 60000,
+        accepted: 12000,
+        outstate: 29000,
+        roomBoard: 10500,
+        books: 900,
+        personal: 2200,
+        phd: 78,
+        terminal: 84,
+        testOptional: true,
+        isPrivate: false,
+        satRange: [1180, 1420],
+        actRange: [27, 33]
+      },
+      {
+        name: "University of Wisconsin-Madison",
+        region: "Midwest",
+        state: "WI",
+        fullUndergrad: 32000,
+        top25perc: 88,
+        gradRate: 85,
+        deadline: "Feb 1",
+        majorStrengths: ["Engineering", "Science", "Business"],
+        applications: 50000,
+        accepted: 10000,
+        outstate: 27000,
+        roomBoard: 11000,
+        books: 900,
+        personal: 2100,
+        phd: 80,
+        terminal: 85,
+        testOptional: true,
+        isPrivate: false,
+        satRange: [1280, 1480],
+        actRange: [29, 33]
+      },
+      {
+        name: "University of Illinois at Urbana-Champaign",
+        region: "Midwest",
+        state: "IL",
+        fullUndergrad: 33000,
+        top25perc: 87,
+        gradRate: 84,
+        deadline: "Jan 15",
+        majorStrengths: ["Engineering", "Science", "Business"],
+        applications: 55000,
+        accepted: 12000,
+        outstate: 32000,
+        roomBoard: 11000,
+        books: 900,
+        personal: 2100,
+        phd: 79,
+        terminal: 84,
+        testOptional: true,
+        isPrivate: false,
+        satRange: [1240, 1450],
+        actRange: [28, 32]
+      },
+      {
+        name: "University of Virginia",
+        region: "South",
+        state: "VA",
+        fullUndergrad: 16000,
+        top25perc: 89,
+        gradRate: 86,
+        deadline: "Jan 1",
+        majorStrengths: ["Business", "Engineering", "Liberal Arts"],
+        applications: 42000,
+        accepted: 6000,
+        outstate: 31000,
+        roomBoard: 11500,
+        books: 950,
+        personal: 2200,
+        phd: 81,
+        terminal: 86,
+        testOptional: true,
+        isPrivate: false,
+        satRange: [1310, 1510],
+        actRange: [30, 34]
+      },
+      {
+        name: "Emory University",
+        region: "South",
+        state: "GA",
+        fullUndergrad: 6900,
+        top25perc: 88,
+        gradRate: 88,
+        deadline: "Jan 10",
+        majorStrengths: ["Business", "Science", "Health"],
+        applications: 29000,
+        accepted: 2800,
+        outstate: 58000,
+        roomBoard: 16500,
+        books: 1000,
+        personal: 2700,
+        phd: 82,
+        terminal: 87,
+        testOptional: true,
+        isPrivate: true,
+        satRange: [1380, 1520],
+        actRange: [31, 34]
+      },
+      {
+        name: "Boston College",
+        region: "Northeast",
+        state: "MA",
+        fullUndergrad: 9300,
+        top25perc: 88,
+        gradRate: 89,
+        deadline: "Jan 15",
+        majorStrengths: ["Business", "Liberal Arts", "Science"],
+        applications: 32000,
+        accepted: 2900,
+        outstate: 59000,
+        roomBoard: 17500,
+        books: 1000,
+        personal: 2800,
+        phd: 81,
+        terminal: 86,
+        testOptional: true,
+        isPrivate: true,
+        satRange: [1380, 1520],
+        actRange: [31, 34]
+      },
+      {
+        name: "University of Arizona",
+        region: "West",
+        state: "AZ",
+        fullUndergrad: 35000,
+        top25perc: 65,
+        gradRate: 68,
+        deadline: "May 1",
+        majorStrengths: ["Engineering", "Science", "Business"],
+        applications: 49000,
+        accepted: 42000,
+        outstate: 29000,
+        roomBoard: 12800,
+        books: 900,
+        personal: 2100,
+        phd: 72,
+        terminal: 78,
+        testOptional: true,
+        isPrivate: false,
+        satRange: [1090, 1330],
+        actRange: [21, 29]
+      }
+    ];
+
+    const importedCollegeData = Array.isArray(window.IMPORTED_COLLEGES) ? window.IMPORTED_COLLEGES : [];
+
+    function mergeCollegeData(baseColleges, newColleges) {
+      const mergedByName = new Map();
+      baseColleges.forEach((school) => mergedByName.set(school.name, { ...school }));
+      newColleges.forEach((school) => {
+        const existing = mergedByName.get(school.name) || {};
+        mergedByName.set(school.name, { ...existing, ...school });
+      });
+      return Array.from(mergedByName.values());
+    }
+
+    const collegeDatabase = mergeCollegeData(collegeData, importedCollegeData);
+
+    let lastResults = [];
+    let savedSchools = [];
+    let compareSlots = [null, null];
+    let schoolNotes = {};
+    let applicationMethods = {};
+      const PROFILE_STORAGE_KEY = "collegeMatchStudentProfileV1";
+    const SCHOOL_NOTES_STORAGE_KEY = "collegeMatchSchoolNotesV1";
+      const COLLEGE_CATALOG_STORAGE_KEY = "collegeMatchCatalogV1";
+    const SAVED_SCHOOLS_STORAGE_KEY = "collegeMatchSavedSchoolsV1";
+    const COMPARE_SLOTS_STORAGE_KEY = "collegeMatchCompareSlotsV1";
+    const APPLICATION_METHOD_STORAGE_KEY = "collegeMatchApplicationMethodsV1";
+
+    function getSchoolSize(fullUndergrad) {
+      if (fullUndergrad < 5000) return "Small";
+      if (fullUndergrad < 15000) return "Medium";
+      return "Large";
+    }
+
+      function getAcceptanceRate(applications, accepted) {
+        if (!applications) return 0;
+        return (accepted / applications) * 100;
+      }
+
+      const MAJOR_CATEGORY_KEYWORDS = {
+        Engineering: [
+          "engineering", "computer science", "artificial intelligence", "informatics", "robotics",
+          "architecture", "aerospace", "chemical", "civil", "materials", "industrial",
+          "biomedical", "bioengineering", "petroleum", "mining", "automotive"
+        ],
+        Business: [
+          "business", "finance", "marketing", "accounting", "commerce", "management",
+          "entrepreneurship", "supply chain", "real estate", "economics"
+        ],
+        Science: [
+          "science", "biology", "chemistry", "physics", "mathematics", "math", "biochemistry",
+          "molecular", "environmental", "geology", "oceanography", "neuroscience",
+          "life sciences", "computer science", "artificial intelligence"
+        ],
+        "Liberal Arts": [
+          "liberal arts", "history", "english", "literature", "philosophy", "political science",
+          "government", "international", "communication", "communications", "journalism",
+          "sociology", "psychology", "american studies", "art history", "theater", "drama",
+          "writing", "law", "public policy"
+        ],
+        Health: [
+          "health", "nursing", "public health", "exercise", "medicine", "medical",
+          "dentistry", "biomedical", "bioengineering", "human development", "pre-professional"
+        ]
+      };
+
+    function getEstimatedCost(college) {
+      return college.outstate + college.roomBoard + college.books + college.personal;
+    }
+
+    function scoreAffordability(college) {
+      const totalCost = getEstimatedCost(college);
+      return Math.max(0, Math.min(100, 100 - totalCost / 700));
+    }
+
+    function scoreOutcomes(college) {
+      return Math.max(
+        0,
+        Math.min(100, college.gradRate * 0.6 + college.phd * 0.2 + college.terminal * 0.2)
+      );
+    }
+
+    function getGpaBenchmark(college) {
+      const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+
+      // Calibrate GPA expectations from selectivity bands so thresholds map more
+      // consistently to the data being used for classification.
+      if (acceptanceRate < 8) return 3.95;
+      if (acceptanceRate < 15) return 3.85;
+      if (acceptanceRate < 25) return 3.75;
+      if (acceptanceRate < 40) return 3.6;
+      if (acceptanceRate < 60) return 3.4;
+      return 3.2;
+    }
+
+    function getTestFit(student, college) {
+      if (student.testPolicy === "optional" && college.testOptional) {
+        return "optional";
+      }
+
+      const fitRank = {
+        missingRequired: 0,
+        below25: 1,
+        unknown: 2,
+        within: 3,
+        above75: 4,
+        optional: 3
+      };
+
+      function fitFromScore(score, range) {
+        if (!score || !range) return "unknown";
+        const [p25, p75] = range;
+        if (score >= p75) return "above75";
+        if (score >= p25) return "within";
+        return "below25";
+      }
+
+      const satFit = fitFromScore(student.sat, college.satRange);
+      const actFit = fitFromScore(student.act, college.actRange);
+
+      if (student.sat && student.act) {
+        return fitRank[satFit] >= fitRank[actFit] ? satFit : actFit;
+      }
+
+      if (student.sat && college.satRange) {
+        const [p25, p75] = college.satRange;
+        if (student.sat >= p75) return "above75";
+        if (student.sat >= p25) return "within";
+        return "below25";
+      }
+
+      if (student.act && college.actRange) {
+        const [p25, p75] = college.actRange;
+        if (student.act >= p75) return "above75";
+        if (student.act >= p25) return "within";
+        return "below25";
+      }
+
+      if (!student.sat && !student.act) {
+        return college.testOptional ? "optional" : "missingRequired";
+      }
+
+      return "unknown";
+    }
+
+    function classifyAdmissionBucket(student, college) {
+      const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+      const gpaBenchmark = getGpaBenchmark(college);
+      const testFit = getTestFit(student, college);
+
+      const gpaDiff = student.gpa - gpaBenchmark;
+      const gpaSafety = gpaDiff >= 0.2;
+      const gpaMatch = gpaDiff >= -0.15;
+      const gpaSoftMatch = gpaDiff >= -0.3;
+      const gpaReach = gpaDiff < -0.45;
+      const testIsCompetitive = testFit === "within" || testFit === "above75" || testFit === "optional";
+      const testIsStrong = testFit === "above75";
+      const testNotWeak = testFit !== "below25" && testFit !== "missingRequired";
+
+      // Niche-style selectivity bands based on acceptance rate.
+      let selectivityBand = "Moderate";
+      if (acceptanceRate < 7) selectivityBand = "Extreme";
+      else if (acceptanceRate < 15) selectivityBand = "Very High";
+      else if (acceptanceRate < 30) selectivityBand = "High";
+      else if (acceptanceRate < 50) selectivityBand = "Moderate";
+      else selectivityBand = "Accessible";
+
+      // Missing scores at a test-required school
+      if (testFit === "missingRequired") {
+        return "Reach";
+      }
+
+      // Clearly under benchmark on GPA should remain Reach.
+      if (gpaReach) {
+        return "Reach";
+      }
+
+      // Extreme selectivity: almost always reaches.
+      if (selectivityBand === "Extreme") {
+        return testIsStrong && gpaSafety ? "Match" : "Reach";
+      }
+
+      // Very high selectivity: competitive profile can be match, otherwise reach.
+      if (selectivityBand === "Very High") {
+        return testIsCompetitive && gpaMatch ? "Match" : "Reach";
+      }
+
+      // High selectivity: strong profile is match, weaker profile trends reach.
+      if (selectivityBand === "High") {
+        if (testIsCompetitive && gpaMatch) return "Match";
+        return "Reach";
+      }
+
+      // Moderate selectivity: strong profile can be safety.
+      if (selectivityBand === "Moderate" && testIsCompetitive && gpaSafety) {
+        return "Safety";
+      }
+
+      // Moderate selectivity: in-range GPA with non-weak testing should still produce safeties.
+      if (selectivityBand === "Moderate" && testNotWeak && gpaMatch) {
+        return "Safety";
+      }
+
+      // Standard match conditions.
+      if (testIsCompetitive && gpaMatch) {
+        return "Match";
+      }
+
+      // Accessible schools: most profiles in reasonable range are safety.
+      if (selectivityBand === "Accessible" && testIsCompetitive && gpaSoftMatch) {
+        return "Safety";
+      }
+
+      // Accessible schools: default to safety when GPA is reasonable and testing is not clearly weak.
+      if (selectivityBand === "Accessible" && testNotWeak && gpaSoftMatch) {
+        return "Safety";
+      }
+
+      // Soft-match fallback.
+      if (testIsCompetitive && gpaSoftMatch) {
+        return "Match";
+      }
+
+      if (testFit === "below25") {
+        return "Reach";
+      }
+
+      return "Reach";
+    }
+
+      function scoreAcademicFit(student, college) {
+      const gpaBenchmark = getGpaBenchmark(college);
+      const testFit = getTestFit(student, college);
+
+      let score = 50;
+
+      if (student.gpa) {
+        const gpaDiff = student.gpa - gpaBenchmark;
+        score += gpaDiff * 40;
+      }
+
+      if (testFit === "above75") score += 20;
+      if (testFit === "within") score += 8;
+      if (testFit === "optional") score += 10;
+      if (testFit === "below25") score -= 18;
+      if (testFit === "missingRequired") score -= 25;
+
+        return Math.max(0, Math.min(100, score));
+      }
+
+      function hasHighlightedMajorFit(studentMajor, college) {
+        if (!studentMajor || studentMajor === "Any") return false;
+
+        const strengths = Array.isArray(college.majorStrengths) ? college.majorStrengths : [];
+        const normalizedStrengths = strengths.map((strength) => String(strength).toLowerCase());
+        const selectedMajor = String(studentMajor).toLowerCase();
+
+        if (normalizedStrengths.some((strength) => strength === selectedMajor || strength.includes(selectedMajor))) {
+          return true;
+        }
+
+        const keywords = MAJOR_CATEGORY_KEYWORDS[studentMajor] || [];
+        return normalizedStrengths.some((strength) =>
+          keywords.some((keyword) => strength.includes(keyword))
+        );
+      }
+
+      function scorePreferenceFit(student, college) {
+        const schoolSize = getSchoolSize(college.fullUndergrad);
+
+        if (student.sizePreference === "Any") return 100;
+        return student.sizePreference === schoolSize ? 100 : 35;
+      }
+
+      function passesFilters(student, college) {
+        // When the student chooses only test-optional schools, exclude all
+        // test-required schools from results entirely.
+      if (student.testPolicy === "optional" && !college.testOptional) {
+        return false;
+      }
+
+        if (student.regionPreference !== "Any" && college.region !== student.regionPreference) {
+          return false;
+        }
+
+        return true;
+      }
+
+    function applyRequiredFilters(student, colleges) {
+      return colleges.filter((college) => passesFilters(student, college));
+    }
+
+    function getAdmissionLikelihoodScore(student, college) {
+      const bucket = classifyAdmissionBucket(student, college);
+      const academicScore = scoreAcademicFit(student, college);
+      const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+
+      let bucketBase = 0;
+      if (bucket === "Safety") bucketBase = 360;
+      else if (bucket === "Match") bucketBase = 220;
+      else if (bucket === "Reach") bucketBase = 80;
+
+      return Number((bucketBase + academicScore + acceptanceRate * 0.2).toFixed(1));
+    }
+
+    function buildWhyMatch(student, college, bucket) {
+      const reasons = [];
+      const size = getSchoolSize(college.fullUndergrad);
+      const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+      const testFit = getTestFit(student, college);
+
+      if (student.regionPreference !== "Any") {
+        reasons.push(`it matches your selected region (${college.region})`);
+      }
+      if (student.sizePreference === "Any" || student.sizePreference === size) {
+        reasons.push(`it matches your ${size.toLowerCase()} school size preference`);
+      }
+        if (student.major !== "Any" && hasHighlightedMajorFit(student.major, college)) {
+          reasons.push(`it lists ${student.major.toLowerCase()} among its highlighted academic strengths`);
+        }
+      if (student.testPolicy === "optional" && college.testOptional) {
+        reasons.push("it allows test-optional admission");
+      }
+      if (student.sat && college.satRange) {
+        const [p25, p75] = college.satRange;
+        if (student.sat >= p75) reasons.push("your SAT is above this school's usual range");
+        else if (student.sat >= p25) reasons.push("your SAT is within this school's middle range");
+      }
+      if (student.act && college.actRange) {
+        const [p25, p75] = college.actRange;
+        if (student.act >= p75) reasons.push("your ACT is above this school's usual range");
+        else if (student.act >= p25) reasons.push("your ACT is within this school's middle range");
+      }
+      if (college.gradRate >= 85) {
+        reasons.push(`it has a strong graduation rate (${college.gradRate}%)`);
+      }
+      if (acceptanceRate >= 55) {
+        reasons.push("it may offer a more realistic admissions chance");
+      } else {
+        reasons.push("it is more selective and competitive");
+      }
+      if (testFit === "below25") {
+        reasons.push("your current test score is below the typical admitted range");
+      }
+
+      const bucketLabel = bucket === "Safety"
+        ? "Why this is a Safety"
+        : bucket === "Match"
+          ? "Why this is a Match"
+          : "Why this is a Reach";
+
+      if (!reasons.length) {
+        if (bucket === "Safety") return "Why this is a Safety: your profile aligns strongly with this school's admissions profile.";
+        if (bucket === "Match") return "Why this is a Match: your profile is competitive, but admission is still selective.";
+        return "Why this is a Reach: this school is more selective for your current profile.";
+      }
+
+      return `${bucketLabel}: ${reasons.slice(0, 4).join(", ")}.`;
+    }
+
+    function classifyAndScoreCollege(student, college) {
+      const academicScore = scoreAcademicFit(student, college);
+      const preferenceScore = scorePreferenceFit(student, college);
+      const affordabilityScore = scoreAffordability(college);
+      const outcomeScore = scoreOutcomes(college);
+      const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+      const totalCost = getEstimatedCost(college);
+      const schoolSize = getSchoolSize(college.fullUndergrad);
+      const bucket = classifyAdmissionBucket(student, college);
+      const admissionLikelihood = getAdmissionLikelihoodScore(student, college);
+      const programHighlights = (college.majorStrengths || []).slice(0, 4);
+      const extracurricularHighlights = (college.extracurricularHighlights || []).slice(0, 4);
+
+      const overallMatch =
+        academicScore * 0.55 +
+        preferenceScore * 0.10 +
+        affordabilityScore * 0.10 +
+        outcomeScore * 0.25;
+
+      return {
+        name: college.name,
+        region: college.region,
+        state: college.state,
+        schoolSize,
+        fullUndergrad: college.fullUndergrad,
+        gradRate: college.gradRate,
+        deadline: college.deadline,
+        majorStrengths: college.majorStrengths,
+        acceptanceRate: Number(acceptanceRate.toFixed(1)),
+        totalCost,
+        academicScore: Number(academicScore.toFixed(1)),
+        preferenceScore: Number(preferenceScore.toFixed(1)),
+        affordabilityScore: Number(affordabilityScore.toFixed(1)),
+        outcomeScore: Number(outcomeScore.toFixed(1)),
+        overallMatch: Number(overallMatch.toFixed(1)),
+        admissionLikelihood: Number(admissionLikelihood.toFixed(1)),
+        bucket,
+          whyMatch: buildWhyMatch(student, college, bucket),
+          majorHighlightMatch: hasHighlightedMajorFit(student.major, college),
+          programHighlights,
+          extracurricularHighlights,
+          testOptional: college.testOptional,
+        satRange: college.satRange,
+        actRange: college.actRange,
+        isPrivate: college.isPrivate
+      };
+    }
+
+    function rankSchools(schools) {
+      return schools.sort((a, b) => {
+        if (b.admissionLikelihood !== a.admissionLikelihood) {
+          return b.admissionLikelihood - a.admissionLikelihood;
+        }
+        if (b.overallMatch !== a.overallMatch) {
+          return b.overallMatch - a.overallMatch;
+        }
+        return a.totalCost - b.totalCost;
+      });
+    }
+
+    function matchColleges(student, colleges) {
+      const filteredColleges = applyRequiredFilters(student, colleges);
+      const classifiedColleges = filteredColleges.map((college) => classifyAndScoreCollege(student, college));
+      return rankSchools(classifiedColleges);
+    }
+
+    function getBucketClass(bucket) {
+      if (bucket === "Safety") return "strong";
+      if (bucket === "Match") return "possible";
+      if (bucket === "Reach") return "stretch";
+      return "";
+    }
+
+    function buildSchoolLinks(schoolName) {
+      const query = `?name=${encodeURIComponent(schoolName)}`;
+      return {
+        details: `school-detail.html${query}`,
+        admissions: `school-admissions.html${query}`,
+        prompts: `school-prompts.html${query}`,
+        programs: `school-programs.html${query}`,
+        extracurriculars: `school-student-life.html${query}`,
+        notes: `school-notes.html${query}`
+      };
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function saveSchoolNotes() {
+      localStorage.setItem(SCHOOL_NOTES_STORAGE_KEY, JSON.stringify(schoolNotes));
+    }
+
+    function loadSchoolNotes() {
+      const raw = localStorage.getItem(SCHOOL_NOTES_STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed === "object") {
+          Object.keys(parsed).forEach(schoolName => {
+            if (typeof parsed[schoolName] === "string") {
+              schoolNotes[schoolName] = { text: parsed[schoolName], files: [] };
+            } else if (typeof parsed[schoolName] === "object" && parsed[schoolName] !== null) {
+              schoolNotes[schoolName] = parsed[schoolName];
+            }
+          });
+        }
+      } catch (error) {
+        schoolNotes = {};
+        localStorage.removeItem(SCHOOL_NOTES_STORAGE_KEY);
+      }
+    }
+
+    function updateSchoolNote(name, value) {
+      if (!schoolNotes[name]) {
+        schoolNotes[name] = { text: value, files: [] };
+      } else if (typeof schoolNotes[name] === "string") {
+        schoolNotes[name] = { text: value, files: [] };
+      } else {
+        schoolNotes[name].text = value;
+      }
+      saveSchoolNotes();
+    }
+
+    function addFileToSchool(schoolName, file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size exceeded. Max 5MB per file.");
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        if (!schoolNotes[schoolName]) {
+          schoolNotes[schoolName] = { text: "", files: [] };
+        }
+        if (typeof schoolNotes[schoolName] === "string") {
+          schoolNotes[schoolName] = { text: schoolNotes[schoolName], files: [] };
+        }
+        
+        schoolNotes[schoolName].files.push({
+          name: file.name,
+          data: e.target.result,
+          type: file.type,
+          size: file.size
+        });
+        saveSchoolNotes();
+        renderFavorites();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeFileFromSchool(schoolName, fileIndex) {
+      if (!schoolNotes[schoolName]) return;
+      if (typeof schoolNotes[schoolName] === "string") return;
+      
+      schoolNotes[schoolName].files.splice(fileIndex, 1);
+      saveSchoolNotes();
+      renderFavorites();
+    }
+
+    function persistCollegeCatalog() {
+      localStorage.setItem(COLLEGE_CATALOG_STORAGE_KEY, JSON.stringify(collegeDatabase));
+    }
+
+    function saveApplicationMethods() {
+      localStorage.setItem(APPLICATION_METHOD_STORAGE_KEY, JSON.stringify(applicationMethods));
+    }
+
+    function schoolSupportsCommonApp(school) {
+      if (!school || !school.name) return false;
+
+      if (Array.isArray(school.applicationMethods)) {
+        return school.applicationMethods.includes("Common App");
+      }
+
+      const directOnlySchools = new Set([
+        "MIT",
+        "Massachusetts Institute of Technology",
+        "UC Berkeley",
+        "UCLA"
+      ]);
+
+      if (directOnlySchools.has(school.name)) {
+        return false;
+      }
+
+      if (school.name === "Georgetown University") {
+        const commonAppStartDate = new Date("2026-08-01T00:00:00");
+        return Date.now() >= commonAppStartDate.getTime();
+      }
+
+      return true;
+    }
+
+    function getApplicationMethodOptions(school) {
+      const options = ["Undecided"];
+      if (schoolSupportsCommonApp(school)) {
+        options.push("Common App");
+      }
+      options.push("Direct");
+      return options;
+    }
+
+    function loadApplicationMethods() {
+      const raw = localStorage.getItem(APPLICATION_METHOD_STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        applicationMethods = parsed && typeof parsed === "object" ? parsed : {};
+      } catch (error) {
+        applicationMethods = {};
+        localStorage.removeItem(APPLICATION_METHOD_STORAGE_KEY);
+      }
+    }
+
+    function updateApplicationMethod(schoolName, method) {
+      if (!schoolName) return;
+      applicationMethods[schoolName] = method;
+      saveApplicationMethods();
+      renderFavorites();
+      renderCompare();
+    }
+
+    function saveSavedSchools() {
+      localStorage.setItem(SAVED_SCHOOLS_STORAGE_KEY, JSON.stringify(savedSchools));
+    }
+
+    function loadSavedSchools() {
+      const raw = localStorage.getItem(SAVED_SCHOOLS_STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const savedItems = JSON.parse(raw);
+        if (!Array.isArray(savedItems)) return;
+        if (!savedItems.length) {
+          savedSchools = [];
+          return;
+        }
+
+        if (typeof savedItems[0] === "string") {
+          savedSchools = savedItems
+            .map((name) => collegeDatabase.find((school) => school.name === name))
+            .filter(Boolean);
+          return;
+        }
+
+        savedSchools = savedItems.filter((school) => school && school.name);
+      } catch (error) {
+        savedSchools = [];
+        localStorage.removeItem(SAVED_SCHOOLS_STORAGE_KEY);
+      }
+    }
+
+    function saveSchool(name) {
+      if (!lastResults.length) return;
+      const school = lastResults.find((item) => item.name === name);
+      if (!school) return;
+      if (savedSchools.some((item) => item.name === name)) return;
+      savedSchools.push(school);
+      saveSavedSchools();
+      renderFavorites();
+      renderCompare();
+      renderResults(lastResults, document.getElementById("studentName").value.trim());
+    }
+
+    function saveCompareSlots() {
+      localStorage.setItem(COMPARE_SLOTS_STORAGE_KEY, JSON.stringify(compareSlots));
+    }
+
+    function loadCompareSlots() {
+      const raw = localStorage.getItem(COMPARE_SLOTS_STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const slots = JSON.parse(raw);
+        if (Array.isArray(slots) && slots.length >= 2) {
+          compareSlots = [slots[0], slots[1]];
+        }
+      } catch (error) {
+        compareSlots = [null, null];
+        localStorage.removeItem(COMPARE_SLOTS_STORAGE_KEY);
+      }
+    }
+
+    function addToCompareSlot(schoolName, slotIndex) {
+      if (slotIndex !== 0 && slotIndex !== 1) return;
+      
+      const school = savedSchools.find((item) => item.name === schoolName);
+      if (!school) return;
+      
+      // Prevent duplicate schools in comparison
+      const otherIndex = slotIndex === 0 ? 1 : 0;
+      if (compareSlots[otherIndex] === schoolName) {
+        alert("That school is already in the other compare slot.");
+        return;
+      }
+      
+      compareSlots[slotIndex] = schoolName;
+      saveCompareSlots();
+      renderFavorites();
+      renderCompare();
+    }
+
+    function removeFromCompare(slotIndex) {
+      if (slotIndex !== 0 && slotIndex !== 1) return;
+      compareSlots[slotIndex] = null;
+      saveCompareSlots();
+      renderFavorites();
+      renderCompare();
+    }
+
+    function replaceSchool(name, slotIndex) {
+      if (!lastResults.length) return;
+      if (slotIndex !== 0 && slotIndex !== 1) return;
+
+      const school = lastResults.find((item) => item.name === name);
+      if (!school) return;
+
+      // Prevent duplicate schools across compare slots.
+      const otherIndex = slotIndex === 0 ? 1 : 0;
+      if (compareSlots[otherIndex] === school.name) {
+        alert("That school is already in the other compare slot.");
+        return;
+      }
+
+      compareSlots[slotIndex] = school.name;
+      saveCompareSlots();
+      renderFavorites();
+      renderCompare();
+      renderResults(lastResults, document.getElementById("studentName").value.trim());
+    }
+
+    function removeSchool(name) {
+      savedSchools = savedSchools.filter((item) => item.name !== name);
+      saveSavedSchools();
+      renderFavorites();
+      renderCompare();
+      renderResults(lastResults, document.getElementById("studentName").value.trim());
+    }
+
+    function renderFavorites() {
+      const favoritesEl = document.getElementById("favorites");
+      if (!savedSchools.length) {
+        favoritesEl.innerHTML = '<div class="empty">No saved schools yet.</div>';
+        return;
+      }
+        favoritesEl.innerHTML = savedSchools.map((school) => {
+          const inSlot0 = compareSlots[0] === school.name;
+          const inSlot1 = compareSlots[1] === school.name;
+          const isInComparison = inSlot0 || inSlot1;
+          const schoolNoteData = schoolNotes[school.name];
+          const noteText = typeof schoolNoteData === 'object' ? (schoolNoteData.text || '') : (schoolNoteData || '');
+          const files = typeof schoolNoteData === 'object' ? (schoolNoteData.files || []) : [];
+          const links = buildSchoolLinks(school.name);
+          const applicationOptions = getApplicationMethodOptions(school);
+          const savedMethod = applicationMethods[school.name] || "Undecided";
+          const applicationMethod = applicationOptions.includes(savedMethod) ? savedMethod : "Undecided";
+          
+          return `
+          <div class="favorite-item">
+            <strong>${school.name}</strong>
+            <div class="muted">${school.region} · ${school.schoolSize} · ${school.bucket}</div>
+            <div class="link-actions">
+              <a class="link-btn" href="${links.details}" target="_blank" rel="noopener noreferrer">School Page</a>
+              <a class="link-btn" href="${links.prompts}" target="_blank" rel="noopener noreferrer">View Past Prompts</a>
+            </div>
+            <div class="application-method">
+              <div class="application-method-title">Application Method</div>
+              <div class="application-method-options">
+                <label class="application-method-option">
+                  <input
+                    type="radio"
+                    name="applicationMethod-${school.name.replace(/[^a-zA-Z0-9]/g, "")}"
+                    value="Undecided"
+                    ${applicationMethod === "Undecided" ? "checked" : ""}
+                    onchange="updateApplicationMethod('${school.name.replace(/'/g, "\\'")}', 'Undecided')"
+                  />
+                  Undecided
+                </label>
+                ${applicationOptions.includes("Common App") ? `
+                <label class="application-method-option">
+                  <input
+                    type="radio"
+                    name="applicationMethod-${school.name.replace(/[^a-zA-Z0-9]/g, "")}"
+                    value="Common App"
+                    ${applicationMethod === "Common App" ? "checked" : ""}
+                    onchange="updateApplicationMethod('${school.name.replace(/'/g, "\\'")}', 'Common App')"
+                  />
+                  Common App
+                </label>
+                ` : ""}
+                <label class="application-method-option">
+                  <input
+                    type="radio"
+                    name="applicationMethod-${school.name.replace(/[^a-zA-Z0-9]/g, "")}"
+                    value="Direct"
+                    ${applicationMethod === "Direct" ? "checked" : ""}
+                    onchange="updateApplicationMethod('${school.name.replace(/'/g, "\\'")}', 'Direct')"
+                  />
+                  Direct
+                </label>
+              </div>
+            </div>
+            <div style="margin-top: 12px; margin-bottom: 8px;">
+              <label style="font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; display: block;">Notes & Files</label>
+              <textarea
+                class="school-note"
+                placeholder="Add notes for this school..."
+              oninput="updateSchoolNote('${school.name.replace(/'/g, "\\'")}', this.value)"
+            >${escapeHtml(noteText)}</textarea>
+            <div style="margin-top: 8px; margin-bottom: 8px;">
+              <input
+                type="file"
+                accept="image/*,.pdf,.doc,.docx,.txt"
+                onchange="addFileToSchool('${school.name.replace(/'/g, "\\'")}', this.files[0]); this.value='';"
+                style="font-size: 0.85rem; padding: 6px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; width: 100%;"
+              />
+            </div>
+            ${files.length > 0 ? `
+            <div style="margin-top: 8px; padding: 8px; background: var(--surface-soft); border-radius: 8px; border: 1px solid var(--line);">
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--muted); margin-bottom: 6px;">Attached Files (${files.length})</div>
+              ${files.map((file, idx) => `
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 0.78rem; border-bottom: 1px solid var(--line);">
+                <a href="${file.data}" download="${file.name}" style="color: var(--primary); text-decoration: none; flex: 1; word-break: break-word;">${file.name}</a>
+                <button class="secondary-btn" onclick="removeFileFromSchool('${school.name.replace(/'/g, "\\'")}', ${idx})" style="padding: 4px 8px; font-size: 0.75rem; margin-left: 8px; white-space: nowrap;">Delete</button>
+              </div>
+              `).join('')}
+            </div>
+            ` : ''}
+          </div>
+          <div class="actions">
+            ${!isInComparison && compareSlots[0] === null 
+              ? `<button class="secondary-btn" onclick="addToCompareSlot('${school.name.replace(/'/g, "\\'")}', 0)">Add to Compare (Slot 1)</button>` 
+              : ''}
+            ${!isInComparison && compareSlots[1] === null 
+              ? `<button class="secondary-btn" onclick="addToCompareSlot('${school.name.replace(/'/g, "\\'")}', 1)">Add to Compare (Slot 2)</button>` 
+              : ''}
+            ${inSlot0 ? `<button class="secondary-btn" onclick="removeFromCompare(0)">Remove from Compare (Slot 1)</button>` : ''}
+            ${inSlot1 ? `<button class="secondary-btn" onclick="removeFromCompare(1)">Remove from Compare (Slot 2)</button>` : ''}
+            <button class="secondary-btn" onclick="removeSchool('${school.name.replace(/'/g, "\\'")}')">Remove School</button>
+          </div>
+        </div>
+      `}).join('');
+    }
+
+      function renderCompareCard(school, slotLabel = "") {
+        const links = buildSchoolLinks(school.name);
+        const applicationOptions = getApplicationMethodOptions(school);
+        const savedMethod = applicationMethods[school.name] || "Undecided";
+        const applicationMethod = applicationOptions.includes(savedMethod) ? savedMethod : "Undecided";
+        return `
+          <div class="compare-card">
+            <h4>${slotLabel ? `${slotLabel}: ` : ""}${school.name}</h4>
+            <ul class="compare-list">
+              <li><strong>Bucket:</strong> ${school.bucket}</li>
+              <li><strong>Application method:</strong> ${applicationMethod}</li>
+              <li><strong>Cost:</strong> $${school.totalCost.toLocaleString()}</li>
+              <li><strong>Acceptance rate:</strong> ${school.acceptanceRate}%</li>
+              <li><strong>Graduation rate:</strong> ${school.gradRate}%</li>
+              <li><strong>Region:</strong> ${school.region}</li>
+            <li><strong>State:</strong> ${school.state}</li>
+            <li><strong>School size:</strong> ${school.schoolSize}</li>
+            <li><strong>Type:</strong> ${school.isPrivate ? 'Private' : 'Public'}</li>
+            <li><strong>Test policy:</strong> ${school.testOptional ? 'Test Optional' : 'Test Required'}</li>
+            <li><strong>SAT range:</strong> ${school.satRange ? school.satRange.join(' - ') : 'N/A'}</li>
+            <li><strong>ACT range:</strong> ${school.actRange ? school.actRange.join(' - ') : 'N/A'}</li>
+            <li><strong>Highlighted academic strengths:</strong> ${school.programHighlights.length ? school.programHighlights.join(", ") : 'N/A'}</li>
+              ${school.extracurricularHighlights.length
+                ? `<li><strong>Extracurriculars:</strong> ${school.extracurricularHighlights.join(", ")}</li>`
+                : ''
+              }
+          </ul>
+          <div class="link-actions">
+            <a class="link-btn" href="${links.details}" target="_blank" rel="noopener noreferrer">Detailed Profile</a>
+            <a class="link-btn" href="${links.admissions}" target="_blank" rel="noopener noreferrer">Admissions</a>
+            <a class="link-btn" href="${links.prompts}" target="_blank" rel="noopener noreferrer">Past Prompts</a>
+            <a class="link-btn" href="${links.programs}" target="_blank" rel="noopener noreferrer">Programs</a>
+            <a class="link-btn" href="${links.extracurriculars}" target="_blank" rel="noopener noreferrer">Extracurriculars</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCompare() {
+      const compareEl = document.getElementById("compareArea");
+      
+      const school0 = compareSlots[0] ? savedSchools.find(s => s.name === compareSlots[0]) : null;
+      const school1 = compareSlots[1] ? savedSchools.find(s => s.name === compareSlots[1]) : null;
+      
+      const hasASchool = school0 || school1;
+      if (!hasASchool) {
+        compareEl.innerHTML = '<div class="empty">Save schools to compare them here.</div>';
+        return;
+      }
+
+      if (school0 && !school1) {
+        compareEl.innerHTML = `
+          <div class="compare-grid">
+            ${renderCompareCard(school0, "Slot 1")}
+            <div class="compare-card">
+              <h4>Add another school</h4>
+              <p class="subtext" style="margin:0;">Select a saved school to add to Slot 2 for side-by-side comparison.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      if (school1 && !school0) {
+        compareEl.innerHTML = `
+          <div class="compare-grid">
+            <div class="compare-card">
+              <h4>Add a school</h4>
+              <p class="subtext" style="margin:0;">Select a saved school to add to Slot 1 for side-by-side comparison.</p>
+            </div>
+            ${renderCompareCard(school1, "Slot 2")}
+          </div>
+        `;
+        return;
+      }
+
+      if (school0 && school1) {
+        compareEl.innerHTML = `
+          <div class="compare-grid">
+            ${renderCompareCard(school0, "Slot 1")}
+            ${renderCompareCard(school1, "Slot 2")}
+          </div>
+        `;
+        return;
+      }
+    }
+
+    function renderResults(results, studentName) {
+      const resultsEl = document.getElementById("results");
+      const resultCountEl = document.getElementById("resultCount");
+      resultCountEl.textContent = `${results.length} schools ranked`;
+
+      if (!results.length) {
+        resultsEl.innerHTML = '<div class="empty">No colleges matched your selected filters.</div>';
+        return;
+      }
+
+        resultsEl.innerHTML = results.map((college, index) => {
+          const bucketClass = getBucketClass(college.bucket);
+          const isSaved = savedSchools.some((item) => item.name === college.name);
+          const links = buildSchoolLinks(college.name);
+
+        return `
+          <div class="result">
+            <div class="result-top">
+              <div>
+                <h3>#${index + 1} ${college.name}</h3>
+                <p class="meta">
+                  ${college.region}, ${college.state} · ${college.schoolSize} ·
+                  ${college.isPrivate ? "Private" : "Public"} · Acceptance rate ${college.acceptanceRate}%
+                </p>
+                <p class="cost-line">
+                  Estimated annual cost: $${college.totalCost.toLocaleString()}${studentName ? ` · for ${studentName}` : ""}
+                </p>
+                <p class="cost-line">
+                  Undergrads: ${college.fullUndergrad.toLocaleString()} · Graduation rate: ${college.gradRate}% · Deadline: ${college.deadline}
+                </p>
+                <p class="cost-line">
+                  SAT: ${college.satRange ? college.satRange.join(" - ") : "N/A"} · ACT: ${college.actRange ? college.actRange.join(" - ") : "N/A"}
+                </p>
+                <p class="cost-line">
+                  Major strengths: ${college.majorStrengths.join(", ")} · ${college.testOptional ? "Test Optional" : "Test Required"}
+                </p>
+                <p class="cost-line">
+                  Highlighted academic strengths: ${college.programHighlights.length ? college.programHighlights.join(", ") : "N/A"}
+                  </p>
+                  ${college.extracurricularHighlights.length
+                    ? `<p class="cost-line">Extracurriculars: ${college.extracurricularHighlights.join(", ")}</p>`
+                    : ''
+                  }
+              </div>
+
+              <div class="score-box">
+                <div>Admission Bucket</div>
+                <div class="big">${college.bucket}</div>
+                <div>Based on admissions fit</div>
+              </div>
+            </div>
+
+            <div class="tag-row">
+              <span class="tag ${bucketClass}">${college.bucket}</span>
+              ${college.testOptional ? '<span class="tag">Test Optional</span>' : '<span class="tag">Test Required</span>'}
+              ${isSaved ? '<span class="tag saved">Saved</span>' : ''}
+            </div>
+
+            <div class="why-box">${college.whyMatch}</div>
+
+            <div class="link-actions">
+              <a class="link-btn" href="${links.details}" target="_blank" rel="noopener noreferrer">Detailed Profile</a>
+              <a class="link-btn" href="${links.admissions}" target="_blank" rel="noopener noreferrer">Admissions</a>
+              <a class="link-btn" href="${links.prompts}" target="_blank" rel="noopener noreferrer">Past Prompts</a>
+              <a class="link-btn" href="${links.programs}" target="_blank" rel="noopener noreferrer">Programs</a>
+              <a class="link-btn" href="${links.extracurriculars}" target="_blank" rel="noopener noreferrer">Extracurriculars</a>
+            </div>
+
+            <div class="actions">
+              <button class="secondary-btn" onclick="saveSchool('${college.name.replace(/'/g, "\\'")}')">
+                ${isSaved ? 'Saved' : 'Save School'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showFormMessage(message, type = "error") {
+      const messageEl = document.getElementById("formMessage");
+      if (!messageEl) return;
+
+      if (!message) {
+        messageEl.textContent = "";
+        messageEl.className = "form-alert";
+        messageEl.style.display = "none";
+        return;
+      }
+
+      messageEl.textContent = message;
+      messageEl.className = `form-alert ${type}`;
+      messageEl.style.display = "block";
+    }
+
+    function parseOptionalNumber(value) {
+      const trimmed = String(value ?? "").trim();
+      if (!trimmed) return null;
+      const num = Number(trimmed);
+      return Number.isFinite(num) ? num : null;
+    }
+
+    function getStudentFromForm() {
+      return {
+        name: document.getElementById("studentName").value.trim(),
+        gpa: parseOptionalNumber(document.getElementById("gpa").value),
+        sat: parseOptionalNumber(document.getElementById("sat").value),
+        act: parseOptionalNumber(document.getElementById("act").value),
+        testPolicy: document.getElementById("testPolicy").value,
+        major: document.getElementById("major").value,
+        regionPreference: document.getElementById("region").value,
+        sizePreference: document.getElementById("size").value
+      };
+    }
+
+    function validateStudentInput(student) {
+      if (student.gpa === null) {
+        return { valid: false, message: "Please enter a GPA to generate matches." };
+      }
+      if (student.gpa < 0 || student.gpa > 4) {
+        return { valid: false, message: "GPA must be between 0.00 and 4.00." };
+      }
+      if (student.sat !== null && (student.sat < 400 || student.sat > 1600)) {
+        return { valid: false, message: "SAT must be between 400 and 1600." };
+      }
+      if (student.act !== null && (student.act < 1 || student.act > 36)) {
+        return { valid: false, message: "ACT must be between 1 and 36." };
+      }
+      if (student.testPolicy !== "optional" && student.sat === null && student.act === null) {
+        return {
+          valid: false,
+          message: "Add an SAT or ACT score unless 'Only Test Optional Schools' is selected."
+        };
+      }
+      return { valid: true };
+    }
+
+    function saveStudentProfile() {
+      const profile = {
+        studentName: document.getElementById("studentName").value,
+        gpa: document.getElementById("gpa").value,
+        sat: document.getElementById("sat").value,
+        act: document.getElementById("act").value,
+        testPolicy: document.getElementById("testPolicy").value,
+        major: document.getElementById("major").value,
+        region: document.getElementById("region").value,
+        size: document.getElementById("size").value
+      };
+      localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+    }
+
+    function loadStudentProfile() {
+      const raw = localStorage.getItem(PROFILE_STORAGE_KEY);
+      if (!raw) return;
+
+      try {
+        const profile = JSON.parse(raw);
+        document.getElementById("studentName").value = profile.studentName ?? "";
+        document.getElementById("gpa").value = profile.gpa ?? "";
+        document.getElementById("sat").value = profile.sat ?? "";
+        document.getElementById("act").value = profile.act ?? "";
+        document.getElementById("testPolicy").value = profile.testPolicy ?? "either";
+        document.getElementById("major").value = profile.major ?? "Any";
+        document.getElementById("region").value = profile.region ?? "Any";
+        document.getElementById("size").value = profile.size ?? "Any";
+      } catch (error) {
+        localStorage.removeItem(PROFILE_STORAGE_KEY);
+      }
+    }
+
+    function wireProfileAutosave() {
+      const fieldIds = ["studentName", "gpa", "sat", "act", "testPolicy", "major", "region", "size"];
+      fieldIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", saveStudentProfile);
+        el.addEventListener("change", saveStudentProfile);
+      });
+    }
+
+    function updateTestRequirementUI() {
+      const testPolicy = document.getElementById("testPolicy").value;
+      const satHint = document.getElementById("satRequirementHint");
+      const actHint = document.getElementById("actRequirementHint");
+      const helpText = document.getElementById("testRequirementHelp");
+      const satInput = document.getElementById("sat");
+      const actInput = document.getElementById("act");
+      const testRequired = testPolicy !== "optional";
+
+      [satHint, actHint].forEach((hint) => {
+        if (!hint) return;
+        hint.textContent = testRequired ? "Required if no other score" : "Optional";
+        hint.classList.toggle("required", testRequired);
+      });
+
+      if (helpText) {
+        helpText.textContent = testRequired
+          ? "Add an SAT or ACT score. You can enter either one or both."
+          : "Test scores are optional when Only Test Optional Schools is selected.";
+      }
+
+      if (satInput) satInput.required = false;
+      if (actInput) actInput.required = false;
+    }
+
+    document.getElementById("matchBtn").addEventListener("click", () => {
+      const student = getStudentFromForm();
+      const validation = validateStudentInput(student);
+      if (!validation.valid) {
+        showFormMessage(validation.message, "error");
+        return;
+      }
+      showFormMessage("", "error");
+      saveStudentProfile();
+
+      lastResults = matchColleges(student, collegeDatabase);
+      renderResults(lastResults, student.name);
+      renderFavorites();
+      renderCompare();
+    });
+
+      loadStudentProfile();
+      loadSchoolNotes();
+      persistCollegeCatalog();
+      loadSavedSchools();
+      loadApplicationMethods();
+      loadCompareSlots();
+      wireProfileAutosave();
+      updateTestRequirementUI();
+      document.getElementById("testPolicy").addEventListener("change", updateTestRequirementUI);
+      renderFavorites();
+    renderCompare();
+  </script>
+</body>
+</html>

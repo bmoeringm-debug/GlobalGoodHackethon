@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>College Match App</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #1f2937;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+    .hero {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2.2rem;
+    }
+    .hero p {
+      margin: 0;
+      line-height: 1.6;
+      color: #4b5563;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 24px;
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    .card h2 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+    .subtext {
+      color: #6b7280;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .full { grid-column: 1 / -1; }
+    label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      font-size: 1rem;
+      background: #fff;
+    }
+    button {
+      border: none;
+      background: #0f172a;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button:hover { opacity: 0.92; }
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .pill {
+      background: #e2e8f0;
+      color: #334155;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .result {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      background: #fafafa;
+    }
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+    .result h3 {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+    }
+    .meta, .cost-line {
+      margin: 4px 0;
+      color: #4b5563;
+    }
+    .score-box {
+      min-width: 150px;
+      text-align: right;
+      background: #e5e7eb;
+      padding: 12px;
+      border-radius: 14px;
+    }
+    .score-box .big {
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin: 4px 0;
+    }
+    .score-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .mini {
+      background: white;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+    }
+    .mini-label {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    .mini-value {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+    .empty {
+      padding: 24px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 16px;
+      color: #64748b;
+      line-height: 1.6;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+      .score-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) {
+      .form-grid, .score-grid { grid-template-columns: 1fr; }
+      .score-box { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>College Match App</h1>
+      <p>
+        Enter a student's GPA, SAT, ACT, region preference, and school size preference.
+        This page runs the matching logic and returns ranked colleges based on academics,
+        preference fit, affordability, and outcomes.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Student Input</h2>
+        <p class="subtext">Fill out the profile and click <strong>Find Matches</strong>.</p>
+
+        <div class="form-grid">
+          <div class="full">
+            <label for="studentName">Student Name</label>
+            <input id="studentName" type="text" placeholder="Enter student name" />
+          </div>
+
+          <div>
+            <label for="gpa">GPA</label>
+            <input id="gpa" type="number" min="0" max="4" step="0.01" placeholder="3.60" />
+          </div>
+
+          <div>
+            <label for="sat">SAT</label>
+            <input id="sat" type="number" min="400" max="1600" placeholder="1280" />
+          </div>
+
+          <div>
+            <label for="act">ACT</label>
+            <input id="act" type="number" min="1" max="36" placeholder="27" />
+          </div>
+
+          <div>
+            <label for="region">Region Preference</label>
+            <select id="region">
+              <option value="Any">Any</option>
+              <option value="Northeast">Northeast</option>
+              <option value="Midwest">Midwest</option>
+              <option value="South">South</option>
+              <option value="West">West</option>
+            </select>
+          </div>
+
+          <div class="full">
+            <label for="size">School Size Preference</label>
+            <select id="size">
+              <option value="Any">Any</option>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="matchBtn">Find Matches</button>
+      </div>
+
+      <div class="card">
+        <div class="results-header">
+          <div>
+            <h2 style="margin-bottom: 6px;">Top Matches</h2>
+            <div class="subtext" style="margin: 0;">Your ranked results will show here.</div>
+          </div>
+          <div class="pill" id="resultCount">0 schools ranked</div>
+        </div>
+
+        <div id="results">
+          <div class="empty">
+            No results yet. Enter student information and click <strong>Find Matches</strong>
+            to generate recommendations.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const collegeData = [
+      {
+        name: "Abilene Christian University",
+        region: "South",
+        applications: 1660,
+        accepted: 1232,
+        enrolled: 721,
+        top25perc: 52,
+        fullUndergrad: 2885,
+        outstate: 7440,
+        roomBoard: 3300,
+        books: 450,
+        personal: 2200,
+        phd: 70,
+        terminal: 78,
+        gradRate: 60,
+      },
+      {
+        name: "Adelphi University",
+        region: "Northeast",
+        applications: 2186,
+        accepted: 1924,
+        enrolled: 512,
+        top25perc: 29,
+        fullUndergrad: 2683,
+        outstate: 12280,
+        roomBoard: 6450,
+        books: 750,
+        personal: 1500,
+        phd: 29,
+        terminal: 30,
+        gradRate: 56,
+      },
+      {
+        name: "Baylor University",
+        region: "South",
+        applications: 4975,
+        accepted: 3440,
+        enrolled: 1016,
+        top25perc: 75,
+        fullUndergrad: 5829,
+        outstate: 15100,
+        roomBoard: 4400,
+        books: 500,
+        personal: 1700,
+        phd: 81,
+        terminal: 85,
+        gradRate: 72,
+      },
+      {
+        name: "Brown University",
+        region: "Northeast",
+        applications: 12586,
+        accepted: 2639,
+        enrolled: 689,
+        top25perc: 95,
+        fullUndergrad: 3316,
+        outstate: 25750,
+        roomBoard: 6430,
+        books: 900,
+        personal: 1200,
+        phd: 90,
+        terminal: 95,
+        gradRate: 97,
+      },
+      {
+        name: "Carleton College",
+        region: "Midwest",
+        applications: 1970,
+        accepted: 684,
+        enrolled: 444,
+        top25perc: 82,
+        fullUndergrad: 1332,
+        outstate: 21700,
+        roomBoard: 6180,
+        books: 550,
+        personal: 890,
+        phd: 83,
+        terminal: 85,
+        gradRate: 91,
+      },
+      {
+        name: "University of Arizona",
+        region: "West",
+        applications: 14201,
+        accepted: 9553,
+        enrolled: 4681,
+        top25perc: 52,
+        fullUndergrad: 15055,
+        outstate: 11744,
+        roomBoard: 4280,
+        books: 400,
+        personal: 1240,
+        phd: 83,
+        terminal: 86,
+        gradRate: 78,
+      }
+    ];
+
+    function getSchoolSize(fullUndergrad) {
+      if (fullUndergrad < 2000) return "Small";
+      if (fullUndergrad < 8000) return "Medium";
+      return "Large";
+    }
+
+    function getAcceptanceRate(applications, accepted) {
+      if (!applications) return 0;
+      return (accepted / applications) * 100;
+    }
+
+    function getEstimatedCost(college) {
+      return college.outstate + college.roomBoard + college.books + college.personal;
+    }
+
+    function scoreAcademicFit(student, college) {
+      let score = 50;
+
+      if (student.gpa) {
+        score += Math.min(30, (student.gpa / 4) * 30);
+        score -= Math.max(0, college.top25perc - student.gpa * 25);
+      }
+
+      if (student.sat) {
+        score += Math.min(10, (student.sat / 1600) * 10);
+      }
+
+      if (student.act) {
+        score += Math.min(10, (student.act / 36) * 10);
+      }
+
+      return Math.max(0, Math.min(100, score));
+    }
+
+    function scorePreferenceFit(student, college) {
+      let score = 0;
+      const schoolSize = getSchoolSize(college.fullUndergrad);
+
+      if (student.regionPreference === "Any" || student.regionPreference === college.region) {
+        score += 50;
+      }
+
+      if (student.sizePreference === "Any" || student.sizePreference === schoolSize) {
+        score += 50;
+      }
+
+      return score;
+    }
+
+    function scoreAffordability(college) {
+      const totalCost = getEstimatedCost(college);
+      return Math.max(0, Math.min(100, 100 - totalCost / 400));
+    }
+
+    function scoreOutcomes(college) {
+      return Math.max(
+        0,
+        Math.min(100, college.gradRate * 0.6 + college.phd * 0.2 + college.terminal * 0.2)
+      );
+    }
+
+    function getBucket(score) {
+      if (score >= 80) return "Strong Match";
+      if (score >= 65) return "Possible Match";
+      if (score >= 50) return "Stretch Match";
+      return "Low Match";
+    }
+
+    function matchColleges(student, colleges) {
+      return colleges
+        .map((college) => {
+          const academicScore = scoreAcademicFit(student, college);
+          const preferenceScore = scorePreferenceFit(student, college);
+          const affordabilityScore = scoreAffordability(college);
+          const outcomeScore = scoreOutcomes(college);
+          const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+          const totalCost = getEstimatedCost(college);
+          const schoolSize = getSchoolSize(college.fullUndergrad);
+
+          const overallMatch =
+            academicScore * 0.4 +
+            preferenceScore * 0.25 +
+            affordabilityScore * 0.15 +
+            outcomeScore * 0.2;
+
+          return {
+            name: college.name,
+            region: college.region,
+            schoolSize,
+            acceptanceRate: Number(acceptanceRate.toFixed(1)),
+            totalCost,
+            academicScore: Number(academicScore.toFixed(1)),
+            preferenceScore: Number(preferenceScore.toFixed(1)),
+            affordabilityScore: Number(affordabilityScore.toFixed(1)),
+            outcomeScore: Number(outcomeScore.toFixed(1)),
+            overallMatch: Number(overallMatch.toFixed(1)),
+            bucket: getBucket(overallMatch),
+          };
+        })
+        .sort((a, b) => b.overallMatch - a.overallMatch);
+    }
+
+    function renderResults(results, studentName) {
+      const resultsEl = document.getElementById("results");
+      const resultCountEl = document.getElementById("resultCount");
+      resultCountEl.textContent = `${results.length} schools ranked`;
+
+      if (!results.length) {
+        resultsEl.innerHTML = '<div class="empty">No colleges matched.</div>';
+        return;
+      }
+
+      resultsEl.innerHTML = results.map((college, index) => `
+        <div class="result">
+          <div class="result-top">
+            <div>
+              <h3>#${index + 1} ${college.name}</h3>
+              <p class="meta">${college.region} · ${college.schoolSize} · Acceptance rate ${college.acceptanceRate}%</p>
+              <p class="cost-line">Estimated annual cost: $${college.totalCost.toLocaleString()}${studentName ? ` · for ${studentName}` : ""}</p>
+            </div>
+            <div class="score-box">
+              <div>Match Score</div>
+              <div class="big">${college.overallMatch}</div>
+              <div>${college.bucket}</div>
+            </div>
+          </div>
+
+          <div class="score-grid">
+            <div class="mini">
+              <div class="mini-label">Academic</div>
+              <div class="mini-value">${college.academicScore}</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label">Preferences</div>
+              <div class="mini-value">${college.preferenceScore}</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label">Affordability</div>
+              <div class="mini-value">${college.affordabilityScore}</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label">Outcomes</div>
+              <div class="mini-value">${college.outcomeScore}</div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    document.getElementById("matchBtn").addEventListener("click", () => {
+      const student = {
+        name: document.getElementById("studentName").value.trim(),
+        gpa: Number(document.getElementById("gpa").value) || 0,
+        sat: Number(document.getElementById("sat").value) || 0,
+        act: Number(document.getElementById("act").value) || 0,
+        regionPreference: document.getElementById("region").value,
+        sizePreference: document.getElementById("size").value,
+      };
+
+      const results = matchColleges(student, collegeData);
+      renderResults(results, student.name);
+    });
+  </script>
+</body>
+</html>

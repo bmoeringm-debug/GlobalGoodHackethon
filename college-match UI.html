@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>College Match App</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0b0b0b; /* black */
+      color: #e5e7eb;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1f1f1f, #3b2f2f); /* black → brown */
+      color: #f5f5f5;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      margin-bottom: 24px;
+      border: 1px solid #3a2e2e;
+    }
+    .hero h1 { margin: 0 0 10px; font-size: 2.2rem; }
+    .hero p { margin: 0; line-height: 1.6; color: #d1d5db; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1.45fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: #111111;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      border: 1px solid #2a1f1f; /* brown border */
+    }
+    .card h2 { margin-top: 0; margin-bottom: 8px; }
+    .subtext { color: #9ca3af; margin-bottom: 20px; line-height: 1.5; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #d6cfc7;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #3a2e2e;
+      border-radius: 14px;
+      font-size: 1rem;
+      background: #0f0f0f;
+      color: #e5e7eb;
+    }
+
+    button {
+      border: none;
+      background: linear-gradient(135deg, #5a3e2b, #8b5e3c); /* brown */
+      color: white;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139,94,60,0.4);
+    }
+    .secondary-btn {
+      background: #2a1f1f;
+      color: #e5e7eb;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .pill {
+      background: #2a1f1f;
+      color: #e5e7eb;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .result {
+      border: 1px solid #2a1f1f;
+      border-radius: 18px;
+      padding: 18px;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #111111, #1c1414);
+    }
+
+    .result h3 { margin: 0 0 6px; font-size: 1.2rem; }
+    .meta, .cost-line { margin: 4px 0; color: #9ca3af; }
+
+    .score-box {
+      min-width: 160px;
+      text-align: right;
+      background: linear-gradient(135deg, #5a3e2b, #8b5e3c);
+      color: white;
+      padding: 12px;
+      border-radius: 14px;
+    }
+    .score-box .big {
+      font-size: 1.7rem;
+      font-weight: 800;
+      margin: 4px 0;
+    }
+
+    .score-grid {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .mini {
+      background: #0f0f0f;
+      border-radius: 12px;
+      padding: 12px;
+      border: 1px solid #2a1f1f;
+    }
+    .mini-label { font-size: 0.8rem; color: #9ca3af; margin-bottom: 6px; }
+    .mini-value { font-size: 1.05rem; font-weight: 800; }
+
+    .tag {
+      display: inline-block;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: #2a1f1f;
+      color: #e5e7eb;
+    }
+
+    .tag.strong { background: #14532d; color: #bbf7d0; }
+    .tag.possible { background: #78350f; color: #fde68a; }
+    .tag.stretch { background: #7f1d1d; color: #fecaca; }
+
+    .why-box {
+      margin-top: 14px;
+      background: #0f0f0f;
+      border: 1px solid #2a1f1f;
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: #d1d5db;
+    }
+
+    .empty {
+      padding: 24px;
+      background: #0f0f0f;
+      border: 1px dashed #2a1f1f;
+      border-radius: 16px;
+      color: #9ca3af;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .score-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) {
+      .form-grid, .score-grid { grid-template-columns: 1fr; }
+      .score-box { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>College Match App</h1>
+      <p>
+        Enter a student's GPA, SAT, ACT, intended major, budget, region preference, school size preference,
+        and acceptance-rate / graduation-rate filters. This page ranks schools based on academics,
+        preferences, affordability, and outcomes.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="card">
+          <h2>Student Input</h2>
+          <p class="subtext">Fill out the profile and click <strong>Find Matches</strong>.</p>
+
+          <div class="form-grid">
+            <div class="full">
+              <label for="studentName">Student Name</label>
+              <input id="studentName" type="text" placeholder="Enter student name" />
+            </div>
+
+            <div>
+              <label for="gpa">GPA</label>
+              <input id="gpa" type="number" min="0" max="4" step="0.01" placeholder="3.60" />
+            </div>
+
+            <div>
+              <label for="sat">SAT</label>
+              <input id="sat" type="number" min="400" max="1600" placeholder="1280" />
+            </div>
+
+            <div>
+              <label for="act">ACT</label>
+              <input id="act" type="number" min="1" max="36" placeholder="27" />
+            </div>
+
+            <div>
+              <label for="major">Intended Major</label>
+              <select id="major">
+                <option value="Any">Any</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Business">Business</option>
+                <option value="Science">Science</option>
+                <option value="Liberal Arts">Liberal Arts</option>
+                <option value="Health">Health</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="region">Region Preference</label>
+              <select id="region">
+                <option value="Any">Any</option>
+                <option value="Northeast">Northeast</option>
+                <option value="Midwest">Midwest</option>
+                <option value="South">South</option>
+                <option value="West">West</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="size">School Size Preference</label>
+              <select id="size">
+                <option value="Any">Any</option>
+                <option value="Small">Small</option>
+                <option value="Medium">Medium</option>
+                <option value="Large">Large</option>
+              </select>
+            </div>
+
+            
+
+            
+
+            
+          </div>
+
+          <button id="matchBtn">Find Matches</button>
+        </div>
+
+        <div class="card" style="margin-top:24px;">
+          <h2>Saved Schools</h2>
+          <p class="subtext">Keep schools here while you compare them.</p>
+          <div id="favorites" class="favorites-list">
+            <div class="empty">No saved schools yet.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="results-header">
+            <div>
+              <h2 style="margin-bottom: 6px;">Top Matches</h2>
+              <div class="subtext" style="margin: 0;">Your ranked results will show here.</div>
+            </div>
+            <div class="pill" id="resultCount">0 schools ranked</div>
+          </div>
+
+          <div id="results">
+            <div class="empty">
+              No results yet. Enter student information and click <strong>Find Matches</strong>
+              to generate recommendations.
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:24px;">
+          <h2>Compare Schools</h2>
+          <p class="subtext">Save up to two schools to compare them side by side.</p>
+          <div id="compareArea">
+            <div class="empty">Save schools to compare them here.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const collegeData = [
+      {
+        name: "Abilene Christian University",
+        region: "South",
+        state: "Texas",
+        setting: "Suburban",
+        isPrivate: true,
+        testOptional: false,
+        majorStrengths: ["Engineering", "Business", "Health"],
+        applications: 1660,
+        accepted: 1232,
+        enrolled: 721,
+        top25perc: 52,
+        fullUndergrad: 2885,
+        outstate: 7440,
+        roomBoard: 3300,
+        books: 450,
+        personal: 2200,
+        phd: 70,
+        terminal: 78,
+        gradRate: 60,
+        deadline: "February 1"
+      },
+      {
+        name: "Adelphi University",
+        region: "Northeast",
+        state: "New York",
+        setting: "Suburban",
+        isPrivate: true,
+        testOptional: true,
+        majorStrengths: ["Business", "Health", "Science"],
+        applications: 2186,
+        accepted: 1924,
+        enrolled: 512,
+        top25perc: 29,
+        fullUndergrad: 2683,
+        outstate: 12280,
+        roomBoard: 6450,
+        books: 750,
+        personal: 1500,
+        phd: 29,
+        terminal: 30,
+        gradRate: 56,
+        deadline: "Rolling"
+      },
+      {
+        name: "Baylor University",
+        region: "South",
+        state: "Texas",
+        setting: "Urban",
+        isPrivate: true,
+        testOptional: true,
+        majorStrengths: ["Engineering", "Business", "Health"],
+        applications: 4975,
+        accepted: 3440,
+        enrolled: 1016,
+        top25perc: 75,
+        fullUndergrad: 5829,
+        outstate: 15100,
+        roomBoard: 4400,
+        books: 500,
+        personal: 1700,
+        phd: 81,
+        terminal: 85,
+        gradRate: 72,
+        deadline: "November 1"
+      },
+      {
+        name: "Brown University",
+        region: "Northeast",
+        state: "Rhode Island",
+        setting: "Urban",
+        isPrivate: true,
+        testOptional: true,
+        majorStrengths: ["Engineering", "Science", "Liberal Arts"],
+        applications: 12586,
+        accepted: 2639,
+        enrolled: 689,
+        top25perc: 95,
+        fullUndergrad: 3316,
+        outstate: 25750,
+        roomBoard: 6430,
+        books: 900,
+        personal: 1200,
+        phd: 90,
+        terminal: 95,
+        gradRate: 97,
+        deadline: "January 3"
+      },
+      {
+        name: "Carleton College",
+        region: "Midwest",
+        state: "Minnesota",
+        setting: "Rural",
+        isPrivate: true,
+        testOptional: true,
+        majorStrengths: ["Science", "Liberal Arts", "Engineering"],
+        applications: 1970,
+        accepted: 684,
+        enrolled: 444,
+        top25perc: 82,
+        fullUndergrad: 1332,
+        outstate: 21700,
+        roomBoard: 6180,
+        books: 550,
+        personal: 890,
+        phd: 83,
+        terminal: 85,
+        gradRate: 91,
+        deadline: "January 15"
+      },
+      {
+        name: "University of Arizona",
+        region: "West",
+        state: "Arizona",
+        setting: "Urban",
+        isPrivate: false,
+        testOptional: true,
+        majorStrengths: ["Engineering", "Science", "Business"],
+        applications: 14201,
+        accepted: 9553,
+        enrolled: 4681,
+        top25perc: 52,
+        fullUndergrad: 15055,
+        outstate: 11744,
+        roomBoard: 4280,
+        books: 400,
+        personal: 1240,
+        phd: 83,
+        terminal: 86,
+        gradRate: 78,
+        deadline: "May 1"
+      }
+    ];
+
+    let lastResults = [];
+    let savedSchools = [];
+
+    function getSchoolSize(fullUndergrad) {
+      if (fullUndergrad < 2000) return "Small";
+      if (fullUndergrad < 8000) return "Medium";
+      return "Large";
+    }
+
+    function getAcceptanceRate(applications, accepted) {
+      if (!applications) return 0;
+      return (accepted / applications) * 100;
+    }
+
+    function getEstimatedCost(college) {
+      return college.outstate + college.roomBoard + college.books + college.personal;
+    }
+
+    function scoreAcademicFit(student, college) {
+      let score = 50;
+
+      if (student.gpa) {
+        score += Math.min(30, (student.gpa / 4) * 30);
+        score -= Math.max(0, college.top25perc - student.gpa * 25);
+      }
+
+      if (student.sat) {
+        score += Math.min(10, (student.sat / 1600) * 10);
+      }
+
+      if (student.act) {
+        score += Math.min(10, (student.act / 36) * 10);
+      }
+
+      if (!student.sat && !student.act && college.testOptional) {
+        score += 6;
+      }
+
+      return Math.max(0, Math.min(100, score));
+    }
+
+    function scorePreferenceFit(student, college) {
+      let score = 0;
+      const schoolSize = getSchoolSize(college.fullUndergrad);
+
+      if (student.regionPreference === "Any" || student.regionPreference === college.region) {
+        score += 45;
+      }
+      if (student.sizePreference === "Any" || student.sizePreference === schoolSize) {
+        score += 35;
+      }
+      if (student.major === "Any") {
+        score += 20;
+      } else if (college.majorStrengths.includes(student.major)) {
+        score += 20;
+      }
+
+      return Math.max(0, Math.min(100, score));
+    }
+
+    function scoreAffordability(student, college) {
+      const totalCost = getEstimatedCost(college);
+      let score = Math.max(0, Math.min(100, 100 - totalCost / 400));
+      return score;
+    }
+
+    function scoreOutcomes(college) {
+      return Math.max(
+        0,
+        Math.min(100, college.gradRate * 0.6 + college.phd * 0.2 + college.terminal * 0.2)
+      );
+    }
+
+    function getBucket(score, academicScore) {
+      if (academicScore >= 88 && score >= 75) return "Safety";
+      if (academicScore >= 68 && score >= 62) return "Match";
+      if (score >= 50) return "Reach";
+      return "Low Match";
+    }
+
+    function buildWhyMatch(student, college) {
+      const reasons = [];
+      const size = getSchoolSize(college.fullUndergrad);
+      const cost = getEstimatedCost(college);
+      const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+
+      if (student.regionPreference === "Any" || student.regionPreference === college.region) {
+        reasons.push(`it is in your preferred region (${college.region})`);
+      }
+      if (student.sizePreference === "Any" || student.sizePreference === size) {
+        reasons.push(`it matches your ${size.toLowerCase()} school size preference`);
+      }
+      if (student.major !== "Any" && college.majorStrengths.includes(student.major)) {
+        reasons.push(`it shows strength in ${student.major.toLowerCase()}`);
+      }
+      
+      if (college.gradRate >= 75) {
+        reasons.push(`it has a strong graduation rate (${college.gradRate}%)`);
+      }
+      if (acceptanceRate >= 55) {
+        reasons.push(`it may offer a more realistic admissions chance`);
+      } else {
+        reasons.push(`it is more selective, so it may be more competitive`);
+      }
+
+      return reasons.length
+        ? `Why this matches you: ${reasons.slice(0, 4).join(", ")}.`
+        : "Why this matches you: it balances academics, preferences, cost, and outcomes.";
+    }
+
+    function passesFilters(student, college, acceptanceRate) {
+      const totalCost = getEstimatedCost(college);
+      
+      
+      if (student.major !== "Any" && !college.majorStrengths.includes(student.major)) return false;
+      
+      return true;
+    }
+
+    function matchColleges(student, colleges) {
+      return colleges
+        .map((college) => {
+          const academicScore = scoreAcademicFit(student, college);
+          const preferenceScore = scorePreferenceFit(student, college);
+          const affordabilityScore = scoreAffordability(student, college);
+          const outcomeScore = scoreOutcomes(college);
+          const acceptanceRate = getAcceptanceRate(college.applications, college.accepted);
+          const totalCost = getEstimatedCost(college);
+          const schoolSize = getSchoolSize(college.fullUndergrad);
+
+          const overallMatch =
+            academicScore * 0.38 +
+            preferenceScore * 0.24 +
+            affordabilityScore * 0.18 +
+            outcomeScore * 0.20;
+
+          return {
+            name: college.name,
+            region: college.region,
+            state: college.state,
+            setting: college.setting,
+            isPrivate: college.isPrivate,
+            testOptional: college.testOptional,
+            schoolSize,
+            fullUndergrad: college.fullUndergrad,
+            top25perc: college.top25perc,
+            gradRate: college.gradRate,
+            deadline: college.deadline,
+            majorStrengths: college.majorStrengths,
+            acceptanceRate: Number(acceptanceRate.toFixed(1)),
+            totalCost,
+            academicScore: Number(academicScore.toFixed(1)),
+            preferenceScore: Number(preferenceScore.toFixed(1)),
+            affordabilityScore: Number(affordabilityScore.toFixed(1)),
+            outcomeScore: Number(outcomeScore.toFixed(1)),
+            overallMatch: Number(overallMatch.toFixed(1)),
+            bucket: getBucket(overallMatch, academicScore),
+            whyMatch: buildWhyMatch(student, college),
+          };
+        })
+        .filter((college) => passesFilters(student, college, college.acceptanceRate))
+        .sort((a, b) => b.overallMatch - a.overallMatch);
+    }
+
+    function getBucketClass(bucket) {
+      if (bucket === "Safety") return "strong";
+      if (bucket === "Match") return "possible";
+      if (bucket === "Reach") return "stretch";
+      return "";
+    }
+
+    function saveSchool(name) {
+      if (!lastResults.length) return;
+      const school = lastResults.find((item) => item.name === name);
+      if (!school) return;
+      if (savedSchools.some((item) => item.name === name)) return;
+      if (savedSchools.length >= 2) {
+        alert("You can save up to 2 schools for comparison in this version.");
+        return;
+      }
+      savedSchools.push(school);
+      renderFavorites();
+      renderCompare();
+      renderResults(lastResults, document.getElementById("studentName").value.trim());
+    }
+
+    function removeSchool(name) {
+      savedSchools = savedSchools.filter((item) => item.name !== name);
+      renderFavorites();
+      renderCompare();
+      renderResults(lastResults, document.getElementById("studentName").value.trim());
+    }
+
+    function renderFavorites() {
+      const favoritesEl = document.getElementById("favorites");
+      if (!savedSchools.length) {
+        favoritesEl.innerHTML = '<div class="empty">No saved schools yet.</div>';
+        return;
+      }
+      favoritesEl.innerHTML = savedSchools.map((school) => `
+        <div class="favorite-item">
+          <strong>${school.name}</strong>
+          <div class="muted">${school.region} · ${school.schoolSize} · ${school.bucket}</div>
+          <div class="actions">
+            <button class="secondary-btn" onclick="removeSchool('${school.name.replace(/'/g, "\'")}')">Remove</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCompare() {
+      const compareEl = document.getElementById("compareArea");
+      if (savedSchools.length < 2) {
+        compareEl.innerHTML = '<div class="empty">Save 2 schools to compare them side by side.</div>';
+        return;
+      }
+      const [a, b] = savedSchools;
+      compareEl.innerHTML = `
+        <div class="compare-grid">
+          ${renderCompareCard(a)}
+          ${renderCompareCard(b)}
+        </div>
+      `;
+    }
+
+    function renderCompareCard(school) {
+      return `
+        <div class="compare-card">
+          <h4>${school.name}</h4>
+          <ul class="compare-list">
+            <li><strong>Bucket:</strong> ${school.bucket}</li>
+            <li><strong>Match score:</strong> ${school.overallMatch}</li>
+            <li><strong>Cost:</strong> $${school.totalCost.toLocaleString()}</li>
+            <li><strong>Acceptance rate:</strong> ${school.acceptanceRate}%</li>
+            <li><strong>Graduation rate:</strong> ${school.gradRate}%</li>
+            <li><strong>Region:</strong> ${school.region}</li>
+            <li><strong>State:</strong> ${school.state}</li>
+            <li><strong>School size:</strong> ${school.schoolSize}</li>
+            <li><strong>Deadline:</strong> ${school.deadline}</li>
+          </ul>
+        </div>
+      `;
+    }
+
+    function renderResults(results, studentName) {
+      const resultsEl = document.getElementById("results");
+      const resultCountEl = document.getElementById("resultCount");
+      resultCountEl.textContent = `${results.length} schools ranked`;
+
+      if (!results.length) {
+        resultsEl.innerHTML = '<div class="empty">No colleges matched these filters. Try widening your budget or lowering your minimum graduation-rate requirement.</div>';
+        return;
+      }
+
+      const selectedMajor = document.getElementById('major').value;
+
+      resultsEl.innerHTML = results.map((college, index) => {
+        const bucketClass = getBucketClass(college.bucket);
+        const isSaved = savedSchools.some((item) => item.name === college.name);
+        return `
+          <div class="result">
+            <div class="result-top">
+              <div>
+                <h3>#${index + 1} ${college.name}</h3>
+                <p class="meta">${college.region}, ${college.state} · ${college.schoolSize} · Acceptance rate ${college.acceptanceRate}%</p>
+                <p class="cost-line">Estimated annual cost: $${college.totalCost.toLocaleString()}${studentName ? ` · for ${studentName}` : ""}</p>
+                <p class="cost-line">Undergrads: ${college.fullUndergrad.toLocaleString()} · Graduation rate: ${college.gradRate}% · Top 25% of high school class: ${college.top25perc}% · Deadline: ${college.deadline}</p>
+                <p class="cost-line">Major strengths: ${college.majorStrengths.join(', ')}</p>
+              </div>
+              <div class="score-box">
+                <div>Match Score</div>
+                <div class="big">${college.overallMatch}</div>
+                <div>${college.bucket}</div>
+              </div>
+            </div>
+
+            <div class="tag-row">
+              <span class="tag ${bucketClass}">${college.bucket}</span>
+              ${college.affordabilityScore >= 70 ? '<span class="tag">Budget Friendly</span>' : ''}
+              ${college.outcomeScore >= 75 ? '<span class="tag">Strong Outcomes</span>' : ''}
+              ${college.preferenceScore >= 75 ? '<span class="tag">Great Preference Fit</span>' : ''}
+              ${selectedMajor !== 'Any' && college.majorStrengths.includes(selectedMajor) ? '<span class="tag">Major Fit</span>' : ''}
+              ${isSaved ? '<span class="tag saved">Saved</span>' : ''}
+            </div>
+
+            <div class="score-grid">
+              <div class="mini">
+                <div class="mini-label">Academic</div>
+                <div class="mini-value">${college.academicScore}</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Preferences</div>
+                <div class="mini-value">${college.preferenceScore}</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Affordability</div>
+                <div class="mini-value">${college.affordabilityScore}</div>
+              </div>
+              <div class="mini">
+                <div class="mini-label">Outcomes</div>
+                <div class="mini-value">${college.outcomeScore}</div>
+              </div>
+            </div>
+
+            <div class="why-box">${college.whyMatch}</div>
+
+            <div class="actions">
+              <button class="secondary-btn" onclick="saveSchool('${college.name.replace(/'/g, "\'")}')">${isSaved ? 'Saved' : 'Save School'}</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    document.getElementById("matchBtn").addEventListener("click", () => {
+      const student = {
+        name: document.getElementById("studentName").value.trim(),
+        gpa: Number(document.getElementById("gpa").value) || 0,
+        sat: Number(document.getElementById("sat").value) || 0,
+        act: Number(document.getElementById("act").value) || 0,
+        major: document.getElementById("major").value,
+        regionPreference: document.getElementById("region").value,
+        sizePreference: document.getElementById("size").value,
+        
+        
+        
+      };
+
+      lastResults = matchColleges(student, collegeData);
+      renderResults(lastResults, student.name);
+      renderFavorites();
+      renderCompare();
+    });
+
+    renderFavorites();
+    renderCompare();
+  </script>
+</body>
+</html>
