@@ -303,6 +303,21 @@
       margin: 4px 0;
       letter-spacing: -0.02em;
     }
+    .score-box.safety {
+      background: linear-gradient(135deg, #f3c34f, #d89b18);
+      color: #3b2a07;
+      box-shadow: inset 0 0 0 1px rgba(255, 248, 223, 0.55);
+    }
+    .score-box.match {
+      background: linear-gradient(135deg, #0f4e76, #1578a5);
+      color: #ffffff;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    }
+    .score-box.reach {
+      background: linear-gradient(135deg, #a32020, #d13a3a);
+      color: #fff5f5;
+      box-shadow: inset 0 0 0 1px rgba(255, 229, 229, 0.25);
+    }
 
     .tag-row {
       margin-top: 12px;
@@ -323,14 +338,14 @@
     }
 
     .tag.strong {
-      background: var(--success-bg);
-      color: var(--success-text);
-      border-color: #ccebd8;
-    }
-    .tag.possible {
       background: var(--warn-bg);
       color: var(--warn-text);
       border-color: #f3ddbe;
+    }
+    .tag.possible {
+      background: #e8f2ff;
+      color: #0f4e76;
+      border-color: #c7dcf7;
     }
     .tag.stretch {
       background: var(--danger-bg);
@@ -1931,7 +1946,7 @@
                   }
               </div>
 
-              <div class="score-box">
+              <div class="score-box ${college.bucket === "Safety" ? "safety" : college.bucket === "Match" ? "match" : "reach"}">
                 <div>Admission Bucket</div>
                 <div class="big">${college.bucket}</div>
                 <div>Based on admissions fit</div>
